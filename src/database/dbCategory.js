@@ -38,15 +38,22 @@ class dbCategory {
         
         let db = await conn.init();
 
-        let sql = `INSERT INTO \`categories\` (${ data.name_en === undefined ? '' : '\`name_en\`,' } 
-        ${ data.name_nl === undefined ? '' : '\`name_nl\`,' } 
-        ${ data.name_am === undefined ? '' : '\`name_am\`,' }) 
-        VALUES 
-        (${ data.name_en === undefined ? '' : ':name_en,'} ${ data.name_nl === undefined ? '' : ':name_nl,'}, ${ data.name_am === undefined ? '' : ':name_am'})`
+        let sql = 'INSERT INTO `categories` (';
+        Object.keys(data).forEach(name => {
+            sql+=`\`${name}\`,`
+        });
+        sql = sql.slice(0, -1);
+        sql += ') VALUES ('
+        Object.keys(data).forEach(name => {
+            sql+=`:${name},`
+        });
+        sql = sql.slice(0, -1);
+        sql += ')'
+        
+        console.log(sql);
 
         try {
-            let [rows] = await db.execute("", 
-            );
+            let [rows] = await db.execute(sql, data);
             return {
                 success: true,
                 data: rows
